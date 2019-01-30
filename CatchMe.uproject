@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{86F2A07B-4901-DACE-C886-D5A451A3800F}",
+	"EngineAssociation": "{616263E7-404D-22F4-BE5A-748D1E8FFCC9}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -19,6 +19,10 @@
 		{
 			"Name": "LuaPlugin",
 			"Enabled": true
+		},
+		{
+			"Name": "HoudiniEngine",
+			"Enabled": false
 		}
 	]
 }
