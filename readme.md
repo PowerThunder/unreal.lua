@@ -36,7 +36,7 @@ for your project:
     
    4.[Debugger](https://github.com/asqbtcupid/unreal.lua/wiki/debugger)
   
-   5.extremely easy for c++ binding. [binding](https://github.com/asqbtcupid/unreal.lua/wiki/Bindding)
+   5.extremely easy for c++ binding. [binding](https://github.com/asqbtcupid/unreal.lua/wiki/Bindding),It's the most powerful lua binding framework in the world.
 
    6.write slate by lua(expertimental),[example](https://github.com/asqbtcupid/unreal.lua/wiki/slate_lua)
 
