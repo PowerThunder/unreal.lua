@@ -2865,7 +2865,7 @@ void UTableUtil::rmgcref(lua_State*inL, UObject* p)
 
 static TAutoConsoleVariable<int32> CVarLuaStrongCheckActorRef(
 	TEXT("r.Lua.CheckActorRef"),
-	0,
+	1,
 	TEXT("0: no check ")
 	TEXT("1: check \n"),
 	ECVF_Default);
