@@ -69,6 +69,14 @@ void UTableUtil::AddGcCount(lua_State*inL, const FString& classname)
 	lua_pop(inL, 1);
 }
 
+static int32 GcCheckActorRef = 1;
+FAutoConsoleVariableRef CVarLuaStrongCheckActorRef(
+	TEXT("r.Lua.CheckActorRef"),
+	GcCheckActorRef,
+	TEXT("0: no check ")
+	TEXT("1: check \n"),
+	ECVF_Default);
+
 void UTableUtil::SubGcCount(lua_State*inL, const FString& classname)
 {
 	lua_geti(inL, LUA_REGISTRYINDEX, LUA_RIDX_MAINTHREAD);
@@ -891,6 +899,9 @@ void UTableUtil::init_reflection_struct_meta(lua_State* inL, const char* structn
 		}
 		if (HasStaticProperty)
 			AddStaticMetaToTable(inL, *ExpandFunc);
+
+		TMap<FString, TArray<UnrealLuaBlueFunc>>& OverloadFuncs = ClassOverloadFuncs.FindOrAdd(structname);
+		BuildOverLoadFuncTree(inL, OverloadFuncs);
 	}
 	if (int32* ClassType = ClassDefineTypeInLua.Find(structname))
 	{
@@ -956,11 +967,14 @@ void* touobject(lua_State* L, int i)
 
 	if (!Obj->IsValidLowLevel())
 	{
-		lua_getmetatable(L, i);
-		lua_getfield(L, -1, "classname");
-		FString Name = lua_tostring(L, -1);
-		ensureAlwaysMsgf(0, TEXT("Bug"));
-		UnrealLua::ReportError(L, "touobject Bug" + Name);
+		if (GcCheckActorRef)
+		{
+			lua_getmetatable(L, i);
+			lua_getfield(L, -1, "classname");
+			FString Name = lua_tostring(L, -1);
+			ensureAlwaysMsgf(0, TEXT("Bug"));
+			UnrealLua::ReportError(L, "touobject Bug" + Name);
+		}
 		return nullptr;
 	}
 #endif
@@ -2863,23 +2877,16 @@ void UTableUtil::rmgcref(lua_State*inL, UObject* p)
 #endif
 }
 
-static TAutoConsoleVariable<int32> CVarLuaStrongCheckActorRef(
-	TEXT("r.Lua.CheckActorRef"),
-	1,
-	TEXT("0: no check ")
-	TEXT("1: check \n"),
-	ECVF_Default);
-
 void FLuaGcObj::AddReferencedObjects(FReferenceCollector& Collector)
 {
 #if STRONG_CHECK_GC_REF
-	bool CheckActorRef = CVarLuaStrongCheckActorRef.GetValueOnAnyThread() == 1;
-	if (CheckActorRef)
+	bool bCheckActorRef = GcCheckActorRef == 1;
+	if (bCheckActorRef)
 		Collector.AllowEliminatingReferences(false);
 #endif
 	Collector.AddReferencedObjects(objs);
 #if STRONG_CHECK_GC_REF
-	if (CheckActorRef)
+	if (bCheckActorRef)
 		Collector.AllowEliminatingReferences(true);
 #endif 
 }

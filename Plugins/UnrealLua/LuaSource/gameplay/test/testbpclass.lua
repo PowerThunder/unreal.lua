@@ -79,6 +79,7 @@ function TestBpClass:BeginPlay( )
 	self:TestBasesBase()
 	self:TestNewStaticProperty()
 	self:TestCallOverload()
+	self:TestGlueCtor()
 	a_("pass")
 end
 
@@ -1994,6 +1995,18 @@ function TestBpClass:TestCallOverload( )
 	assert(a:t(ss) == 17)
 	assert(a:t(ss1) == 17)
 	--]]
+end
+
+function TestBpClass:TestGlueCtor()
+	local b = FVector.New(1,2,3)
+	local c = FVector.Temp(1,2,3)
+	assert(b.x == 1)
+	assert(b.y == 2)
+	assert(b.z == 3)
+
+	assert(c.x == 1)
+	assert(c.y == 2)
+	assert(c.z == 3)
 end
 
 return TestBpClass

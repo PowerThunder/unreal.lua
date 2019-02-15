@@ -132,9 +132,9 @@ struct TMakeDefaultTuple<0, T, OriginalArgs...>
 	using Type = TTuple<T, OriginalArgs...>;
 
 	template<class... DefaultArgs>
-	static Type ConstructTuple(DefaultArgs&&... Args)
+	static Type ConstructTuple(const DefaultArgs&... Args)
 	{
-		return MakeTuple<T, OriginalArgs...>(Forward<DefaultArgs>(Args)...);
+		return Type(Args...);
 	}
 };
 
@@ -1020,9 +1020,9 @@ TCreateCheckFuncs<SIGNATURE>::Get(__VA_ARGS__)},
 
 #define LUA_GLUE_CTOR(FUNC, ...)\
 {"New", [](lua_State*inL)->int32{ return TCtorType<TheClassType FUNC>::Ctor(inL, ##__VA_ARGS__);},\
-(uint32)ELuaFuncExportFlag::RF_OverLoad, TCreateCheckFuncs<TheClassType(*)FUNC>::Get()},\
+(uint32)ELuaFuncExportFlag::RF_OverLoad, TCreateCheckFuncs<TheClassType(*)FUNC>::Get(__VA_ARGS__)},\
 {"Temp", [](lua_State*inL)->int32{ return TCtorType<TheClassType FUNC>::Temp(inL, ##__VA_ARGS__);},\
-(uint32)ELuaFuncExportFlag::RF_OverLoad, TCreateCheckFuncs<TheClassType(*)FUNC>::Get()},
+(uint32)ELuaFuncExportFlag::RF_OverLoad, TCreateCheckFuncs<TheClassType(*)FUNC>::Get(__VA_ARGS__)},
 
 #define LUA_GLUE_INTERFACE_BODY(NAME, ...)\
 namespace LuaGlueSpace_##NAME \
